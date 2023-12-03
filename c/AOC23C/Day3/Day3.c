@@ -188,7 +188,7 @@ int main()
 
             //find whole numbers and store them as cached values
             int int_test = ch - '0';
-            if (int_test >= 1 && int_test <= 9) {
+            if (int_test >= 0 && int_test <= 9) {
                 new_number[ich] = ch;
                 new_item.points[ich].x = i;
                 new_item.points[ich].y = iLine;
