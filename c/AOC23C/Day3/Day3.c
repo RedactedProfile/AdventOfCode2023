@@ -1,4 +1,4 @@
-// Day3.cpp : This file contains the 'main' function. Program execution begins and ends there.
+﻿// Day3.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 #define _CRT_SECURE_NO_WARNINGS
 
@@ -98,10 +98,10 @@ int CursorScan(vec2_t cursor, char symbol)
     for (int p = 0; p < sizeof(points) / sizeof(vec2_t); p++)
     {
         // clamp value if neeed to avoid OOI errors
-        if (points[p].x < 0) points[p].x = 0;
-        else if (points[p].x > GRID_WIDTH) points[p].x = GRID_WIDTH;
-        else if (points[p].y < 0) points[p].y = 0;
-        else if (points[p].y > GRID_HEIGHT) points[p].y = GRID_HEIGHT;
+        //if (points[p].x < 0) points[p].x = 0;
+        //else if (points[p].x > GRID_WIDTH) points[p].x = GRID_WIDTH;
+        //else if (points[p].y < 0) points[p].y = 0;
+        //else if (points[p].y > GRID_HEIGHT) points[p].y = GRID_HEIGHT;
 
         int value = cache[points[p].y][points[p].x].value;
         if (value > 0) {
@@ -132,7 +132,7 @@ int CursorScan(vec2_t cursor, char symbol)
         }
         
     }
-    printf("\n\n");
+    printf("= \033[0;31m%i\033[0m\n\n", sum);
     
     return sum;
 }
@@ -160,7 +160,7 @@ int main()
     /// Read Input
 
     printf("Reading input file\n");
-    ptr = fopen("../../../_puzzle_input/day3/input.txt", "r");
+    ptr = fopen("../../../_puzzle_input/day3/c_input.txt", "r");
     if (NULL == ptr) {
         printf("File can't be opened. Aborting.\n");
         return 1;
@@ -172,6 +172,7 @@ int main()
     iLine = 0;
     while (fgets(line, sizeof(line), ptr) != NULL)
     {
+        unsigned long long l = sizeof(line);
         char new_number[4] = { '\0', '\0', '\0', '\0' };
         cached_value_t new_item;
         CacheValueIdentity(&new_item);
@@ -209,7 +210,7 @@ int main()
                 ich = 0;
             }
         }
-        score += 0;
+        
         iLine++;
     }
 
@@ -221,13 +222,14 @@ int main()
             cursor.x = c;
             ch = grid[r][c];
 
-            // ignore if `.` or digit
+            if (ch == '\0') {
+                break; // end of the line bucko
+            }
+
+            // move on if `.` or digit
             int int_test = ch - '0';
             if (ch == SYMBOL_BLANK || (int_test >= 1 && int_test <= 9)) {
                 continue;
-            }
-            else if (ch == '\0') {
-                break; // end of the line bucko
             }
 
             // clearly one of the symbols, do a scan
@@ -244,19 +246,31 @@ int main()
             case SYMBOL_SUB:
             case SYMBOL_HASH:
                 score += CursorScan(cursor, ch);
+                printf("New Score: \033[0;32m%i\033[0m\n\n", score);
                 break;
             default:
                 continue;
                 break;
             }
-            
-
         }
     }
 
     fclose(ptr);
 
-    printf("==========================================\n====== Score Part 1: %i\n==============================================\n", score);
+    
+    int desired_score = 544664;
+    printf("==========================================\n====== Score Part 1: %i\n==============================================\n====== Desired:      %i\n\n", score, desired_score);
+    
+    
+    if (score > desired_score) {
+        printf("Too high by %i \n\n", score - desired_score);
+    }
+    else if (score < desired_score) {
+        printf("Too low by %i \n\n", desired_score - score);
+    }
+    else if (score == desired_score) {
+        printf("- Congratulations 🥳 - ");
+    }
 
     printf("Done.");
 
