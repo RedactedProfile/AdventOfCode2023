@@ -53,25 +53,33 @@ int cache_ptr,
     ycache_ptr;
 
 char symbols[] = {
-        SYMBOL_STAR,
-        SYMBOL_DOLLAR,
-        SYMBOL_AMP,
-        SYMBOL_SLASH,
-        SYMBOL_AT,
-        SYMBOL_PERCENT,
-        SYMBOL_EQ,
-        SYMBOL_ADD,
-        SYMBOL_SUB,
-        SYMBOL_HASH
+    SYMBOL_STAR,
+    SYMBOL_DOLLAR,
+    SYMBOL_AMP,
+    SYMBOL_SLASH,
+    SYMBOL_AT,
+    SYMBOL_PERCENT,
+    SYMBOL_EQ,
+    SYMBOL_ADD,
+    SYMBOL_SUB,
+    SYMBOL_HASH
 };
 
+void CacheValueIdentity(cached_value_t* item)
+{
+    for (int v = 0; v < 4; v++) {
+        item->points[v].x = -1;
+        item->points[v].y = -1;
+    }
+    item->value = 0;
+}
 
-
-void CursorScan(vec2_t cursor, char symbol) 
+int CursorScan(vec2_t cursor, char symbol) 
 {
     int consideredValues[8] = { '\0', '\0', '\0' , '\0' , '\0' , '\0' , '\0' , '\0' },
-        iConsidered = 0;
-    printf("============================\n");
+        iConsidered = 0,
+        sum = 0;
+    printf("======= Scanning around %c at %i,%i \n", symbol, cursor.x, cursor.y);
     // only consider each discovered number once
     
     // look through cache index 
@@ -108,31 +116,25 @@ void CursorScan(vec2_t cursor, char symbol)
                     break; // out of the for loop
                 }
             }
-            if (!found) continue;
+            if (found) continue;
             consideredValues[iConsidered] = value;
+            iConsidered++;
         }
         
 
     }
 
-    printf("Considered variables: ");
+    printf("Considered values: ");
     for (int v = 0; v < sizeof(consideredValues) / sizeof(int); v++) {
-        if (consideredValues[v] != '\0') {
+        if (consideredValues[v] > 0) {
             printf("%i, ", consideredValues[v]);
+            sum += consideredValues[v];
         }
         
     }
     printf("\n\n");
     
-    // Left
-    
-    // Top Left
-    // Top
-    // Top Right 
-    // Right
-    // Bottom Right
-    // Bottom
-    // Bottom Left
+    return sum;
 }
 
 int main()
@@ -158,7 +160,7 @@ int main()
     /// Read Input
 
     printf("Reading input file\n");
-    ptr = fopen("../../../_puzzle_input/day3/input_sample.txt", "r");
+    ptr = fopen("../../../_puzzle_input/day3/input.txt", "r");
     if (NULL == ptr) {
         printf("File can't be opened. Aborting.\n");
         return 1;
@@ -166,12 +168,13 @@ int main()
 
     printf("Part 1: \n");
 
-    char line[100];
+    char line[GRID_WIDTH];
     iLine = 0;
     while (fgets(line, sizeof(line), ptr) != NULL)
     {
         char new_number[4] = { '\0', '\0', '\0', '\0' };
         cached_value_t new_item;
+        CacheValueIdentity(&new_item);
         //printf("---------------------------\nline: %s", line);
         ich = 0;
         for (i = 0; i < sizeof(line); i++) {
@@ -200,6 +203,9 @@ int main()
                     }
                 }
 
+                // reset values properly
+                memset(new_number, 0, sizeof(new_number));
+                CacheValueIdentity(&new_item);
                 ich = 0;
             }
         }
@@ -225,12 +231,32 @@ int main()
             }
 
             // clearly one of the symbols, do a scan
-            CursorScan(cursor, ch);
+            switch (ch)
+            {
+            case SYMBOL_STAR:
+            case SYMBOL_DOLLAR:
+            case SYMBOL_AMP:
+            case SYMBOL_SLASH:
+            case SYMBOL_AT:
+            case SYMBOL_PERCENT:
+            case SYMBOL_EQ:
+            case SYMBOL_ADD:
+            case SYMBOL_SUB:
+            case SYMBOL_HASH:
+                score += CursorScan(cursor, ch);
+                break;
+            default:
+                continue;
+                break;
+            }
+            
 
         }
     }
 
     fclose(ptr);
+
+    printf("==========================================\n====== Score Part 1: %i\n==============================================\n", score);
 
     printf("Done.");
 
