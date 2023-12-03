@@ -65,6 +65,7 @@ void RoundAssign(char color, round_t *round, int index) {
     memset(round->unassignedNumeral, 0, sizeof(round->unassignedNumeral));
 }
 
+// Determine if round would have been possible without going over these thresholds
 bool RoundQualify(round_t* round, int max_red, int max_green, int max_blue) {
     for (int i = 0; i < round->rounds; i++) {
         if (round->red[i] > max_red || round->blue[i] > max_blue || round->green[i] > max_green) {
@@ -74,9 +75,23 @@ bool RoundQualify(round_t* round, int max_red, int max_green, int max_blue) {
     return true;
 }
 
+
+// The power of a set of cubes is equal to the numbers of red, green, and blue cubes multiplied together.
+int RoundFewest(round_t* round) {
+    int highestValues[3] = {0,0,0};
+    for (int i = 0; i < round->rounds; i++)
+    {
+        if (highestValues[SLOT_RED] < round->red[i]) highestValues[SLOT_RED] = round->red[i];
+        if (highestValues[SLOT_GREEN] < round->green[i]) highestValues[SLOT_GREEN] = round->green[i];
+        if (highestValues[SLOT_BLUE] < round->blue[i]) highestValues[SLOT_BLUE] = round->blue[i];
+    }
+
+    return highestValues[SLOT_RED] * highestValues[SLOT_GREEN] * highestValues[SLOT_BLUE];
+}
+
 int main()
 {
-    int score,
+    int score, score2,
         ich,
         i,
         iLine,
@@ -89,6 +104,7 @@ int main()
     printf("=====================================\n==== AOC '23, C edition \n====     by Kyle Harrison\n===================\n==== Day 2 \n=================================\n\n");
 
     score = 0;
+    score2 = 0;
     /// Read Input
 
     printf("Reading input file\n");
@@ -214,11 +230,14 @@ int main()
             score += round.id;
         }
 
+        score2 += RoundFewest(&round);
+
         // Run round parser for Phase 2?
         iLine++;
     }
 
     printf("====================\nPart 1 Score is: %i\n====================\n", score);
+    printf("====================\nPart 2 Score is: %i\n====================\n", score2);
 
     fclose(ptr);
 
