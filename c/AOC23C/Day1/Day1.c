@@ -35,7 +35,7 @@ int main()
         iLine;
     FILE* ptr;
     char ch,
-         digits[2];
+         digits[3];
 
 
     printf("=====================================\n==== AOC '23, C edition \n====     by Kyle Harrison\n===================\n==== Day 1 \n=================================\n\n");
@@ -53,6 +53,7 @@ int main()
     
     digits[0] = 0; 
     digits[1] = 0;
+    digits[2] = '\0';
     score = 0;
     do {
         ch = fgetc(ptr);
