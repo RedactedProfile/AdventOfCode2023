@@ -165,10 +165,21 @@ void build_cache()
 int main()
 {
 	ExecutionTimer<std::chrono::milliseconds> timer;
+	int score, i;
 
 	std::cout << "Advent of Code 2023, Day 4: Scratchcards." << std::endl;
 	std::cout << "========================================" << std::endl;
 
 	build_cache();
+
+	{
+		score = 0;
+		for (i = 0; i < games.size(); ++i) {
+			score += games[i].score();
+		}
+
+		std::cout << "Part 1 Score: " << score << std::endl;
+	}
+
 
 }
