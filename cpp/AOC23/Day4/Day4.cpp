@@ -17,7 +17,7 @@
     #define MAX_WINNERS     5
     #define MAX_PLAYS       8
     #define MAX_ID_SIZE     2
-#define MAX_VALUE_SIZE  2
+    #define MAX_VALUE_SIZE  2
 #endif // USE_SAMPLE
 #ifndef USE_SAMPLE
     #define FILENAME        "input.txt"
