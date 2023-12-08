@@ -71,7 +71,7 @@ public:
 		for (int i = 0; i < number.range.size(); ++i) {
 			for (int b = 0; b < bbox.size(); ++b) {
 				if (number.range[i] == bbox[b]) {
-					std::cout << "number(" << number.range[i].x << "," << number.range[i].y << ") == bbox(" << bbox[b].x << "," << bbox[b].y << ")" << std::endl;
+					//std::cout << "number(" << number.range[i].x << "," << number.range[i].y << ") == bbox(" << bbox[b].x << "," << bbox[b].y << ")" << std::endl;
 					return true;
 				}
 			}
@@ -96,25 +96,9 @@ std::unordered_map<std::string, char> symbol_map = {
 	{"hash",	'#' }
 };
 
-
-int combineToInt(const std::vector<int>& numbers) {
-	std::stringstream ss;
-
-	// Append all integers from the vector to stringstream
-	for (int num : numbers) {
-		ss << num;
-	}
-
-	// Convert stringstream to string and then parse to integer
-	int combinedNumber;
-	ss >> combinedNumber;
-
-	return combinedNumber;
-}
-
 void line_parser(std::string line, int line_num)
 {
-	std::cout << line << std::endl;
+	//std::cout << line << std::endl;
 
 	auto skv = std::views::values(symbol_map);
 	std::vector<char> symbols = { skv.begin(), skv.end() };
@@ -200,7 +184,6 @@ void read_file(std::string filename, void (*parser)(std::string line, int line_n
 
 void build_cache() 
 {
-
 	read_file("../../../_puzzle_input/day3/input.txt", line_parser);
 }
 
@@ -217,11 +200,11 @@ int main()
 	for (int n = 0; n < part_numbers.size(); ++n) {
 		PartNumber number = part_numbers[n];
 
-		std::cout << "Part Number " << number.value << " with range " ;
-		for (int r = 0; r < number.range.size(); ++r) {
-			std::cout << "(" << number.range[r].x << ", " << number.range[r].y << "), ";
-		}
-		std::cout << std::endl;
+		//std::cout << "Part Number " << number.value << " with range " ;
+		//for (int r = 0; r < number.range.size(); ++r) {
+		//	std::cout << "(" << number.range[r].x << ", " << number.range[r].y << "), ";
+		//}
+		//std::cout << std::endl;
 
 
 		for (int p = 0; p < parts.size(); ++p) {
@@ -229,7 +212,7 @@ int main()
 
 
 			if (part.collides(number)) {
-				std::cout << "Collision of " << number.value << " with part " << part.part_ref << " at " << part.point.x << "," << part.point.y << " (" << part.point.x +1 << "," << part.point.y + 1 << ")" << std::endl;
+				//std::cout << "Collision of " << number.value << " with part " << part.part_ref << " at " << part.point.x << "," << part.point.y << " (" << part.point.x +1 << "," << part.point.y + 1 << ")" << std::endl;
 				score += number.value;
 				break;
 			}
@@ -237,4 +220,27 @@ int main()
 	}
 
 	std::cout << "Part 1 Score: " << score << std::endl;
+
+	// reset for part 2
+	score = 0;
+	for (int p = 0; p < parts.size(); ++p) {
+		Part part = parts[p];
+		if (part.part_ref != symbol_map["star"]) {
+			continue; // ignore all non-gear symbols
+		}
+
+		auto values = std::vector<PartNumber>();
+		for (int n = 0; n < part_numbers.size(); ++n) {
+			PartNumber number = part_numbers[n];
+
+			if (part.collides(number)) {
+				values.push_back(number);
+			}
+		}
+
+		if (values.size() == 2) {
+			score += values[0].value * values[1].value;
+		}
+	}
+	std::cout << "Part 2 Score: " << score << std::endl;
 }
