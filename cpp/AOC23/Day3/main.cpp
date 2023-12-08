@@ -1,4 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS
+﻿#define _CRT_SECURE_NO_WARNINGS
 
 #include <iostream>
 #include <fstream>
@@ -201,7 +201,7 @@ void read_file(std::string filename, void (*parser)(std::string line, int line_n
 void build_cache() 
 {
 
-	read_file("../../../_puzzle_input/day3/input_sample.txt", line_parser);
+	read_file("../../../_puzzle_input/day3/input.txt", line_parser);
 }
 
 int main()
@@ -237,5 +237,4 @@ int main()
 	}
 
 	std::cout << "Part 1 Score: " << score << std::endl;
-
 }
