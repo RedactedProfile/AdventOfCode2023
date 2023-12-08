@@ -32,8 +32,10 @@ public:
 		range.clear();
 		range.resize(length);
 
-		for (int i = 0; i < length; ++i) {
-			range[i] = { i, y };
+		int iter = 0;
+		for (int i = x; i < x + length; ++i) {
+			range[iter] = { i, y };
+			iter++;
 		}
 	}
 
@@ -69,6 +71,7 @@ public:
 		for (int i = 0; i < number.range.size(); ++i) {
 			for (int b = 0; b < bbox.size(); ++b) {
 				if (number.range[i] == bbox[b]) {
+					std::cout << "number(" << number.range[i].x << "," << number.range[i].y << ") == bbox(" << bbox[b].x << "," << bbox[b].y << ")" << std::endl;
 					return true;
 				}
 			}
@@ -157,7 +160,7 @@ void line_parser(std::string line, int line_num)
 						part_numbers.push_back(part_num);
 
 						// reset ichar and jump this much
-						i += ichar;
+						i += (ichar - 1);
 						ichar = 0;
 					}
 
@@ -212,13 +215,23 @@ int main()
 
 	int score = 0;
 	for (int n = 0; n < part_numbers.size(); ++n) {
+		PartNumber number = part_numbers[n];
+
+		std::cout << "Part Number " << number.value << " with range " ;
+		for (int r = 0; r < number.range.size(); ++r) {
+			std::cout << "(" << number.range[r].x << ", " << number.range[r].y << "), ";
+		}
+		std::cout << std::endl;
+
+
 		for (int p = 0; p < parts.size(); ++p) {
 			Part part = parts[p];
-			PartNumber number = part_numbers[n];
+
 
 			if (part.collides(number)) {
 				std::cout << "Collision of " << number.value << " with part " << part.part_ref << " at " << part.point.x << "," << part.point.y << " (" << part.point.x +1 << "," << part.point.y + 1 << ")" << std::endl;
 				score += number.value;
+				break;
 			}
 		}
 	}
