@@ -10,7 +10,7 @@
 #include <ExecutionTime.h>
 
 
-#define USE_SAMPLE2
+#define USE_SAMPLE
 
 
 #ifdef USE_SAMPLE
@@ -39,6 +39,16 @@ public:
 	
 	Game() : winners(MAX_WINNERS), plays(MAX_PLAYS) {
 		id = 0;
+	}
+
+	int total_matches() {
+		int score = 0;
+		for (int i = 0; i < plays.size(); ++i) {
+			if (std::find(winners.begin(), winners.end(), plays[i]) != winners.end()) {
+				score++;
+			}
+		}
+		return score;
 	}
 
 	int score() {
@@ -124,9 +134,8 @@ void line_parser(std::string line, int line_num)
 
 			break;
 		}
-		default: {
+		default: 
 			break;
-		}
 		}
 
 	}
@@ -165,13 +174,14 @@ void build_cache()
 int main()
 {
 	ExecutionTimer<std::chrono::milliseconds> timer;
-	int score, i;
+	int score, i, c;
 
 	std::cout << "Advent of Code 2023, Day 4: Scratchcards." << std::endl;
 	std::cout << "========================================" << std::endl;
 
 	build_cache();
 
+	// Part 1, sum up the calculated score of each card
 	{
 		score = 0;
 		for (i = 0; i < games.size(); ++i) {
@@ -181,5 +191,20 @@ int main()
 		std::cout << "Part 1 Score: " << score << std::endl;
 	}
 
+	// Part 2, find out how many winning numbers there were per card, clone that many cards below into the games cache, and re-sum up the score
+	{
+		score = 0;
+		std::vector<Game> games_clone(games);
+		for (i = 0; i < games_clone.size(); ++i) {
+			for (c = 0; c < games[i].total_matches(); ++c) {
+				// if there are some, clone the range
+				games.push_back(games[i + c]);
+			}
+		}
+		for (i = 0; i < games.size(); ++i) {
+			score += games[i].score();
+		}
 
+		std::cout << "Part 1 Score: " << score << std::endl;
+	}
 }
