@@ -10,7 +10,7 @@
 #include <ExecutionTime.h>
 
 
-#define USE_SAMPLE 
+#define USE_SAMPLE2
 
 
 #ifdef USE_SAMPLE
@@ -24,7 +24,7 @@
 	#define FILENAME	"input.txt"
 	#define MAX_WINNERS 10
 	#define MAX_PLAYS	25
-	#define MAX_ID_SIZE 3
+	#define MAX_ID_SIZE 4
 	#define MAX_VALUE_SIZE 2
 #endif // !USE_SAMPLE
 
@@ -98,7 +98,7 @@ void line_parser(std::string line, int line_num)
 #ifdef USE_SAMPLE
 			char val[] = { line[i], line[i + 1], '\0' };
 #else
-			char val[] = { line[i], line[i + 1], line[i + 2], '\0' };
+			char val[] = { line[i], line[i + 1], line[i + 2], line[i + 3], '\0' };
 #endif // USE_SAMPLE
 
 			game.id = atoi(val);
