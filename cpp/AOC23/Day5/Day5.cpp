@@ -15,7 +15,7 @@
 // Configuration 
 #define DAY "5"
 #define SLOGAN "If You Give A Seed A Fertilizer"
-#define USE_SAMPLE false
+#define USE_SAMPLE true
 
 // Conditional Configuration
 #if USE_SAMPLE
@@ -50,7 +50,7 @@ public:
     }
 
     bool in(uint32_t val) {
-        return start >= val && end <= val;
+        return val >= start && val <= end;
     }
 };
 
@@ -107,8 +107,46 @@ void handle_seeds(std::string line) {
     Seeds = values;
 }
 
-uint32_t handle_find_seed_location(uint32_t seed) {
-    return 5;
+struct PathMap
+{
+    uint32_t 
+        seed, 
+        soil, 
+        fertilizer, 
+        water, 
+        light, 
+        temperature, 
+        humidity, 
+        location;
+};
+
+uint32_t handle_map(std::vector<std::pair<RangeMap, RangeMap>>& map, uint32_t value) {
+    uint32_t result = value; // default value that might be overridden
+    for (int i = 0; i < map.size(); ++i) {
+        if (map[i].second.in(value) == true) {
+            result = map[i].first.start + (value - map[i].second.start);
+            break;
+        }
+    }
+    return result;
+}
+
+PathMap handle_find_seed_location(uint32_t seed) {
+    // we'll brute force this for now, maybe there's a better faster way using loops or something 
+    
+    // seed -> Soil -> Fert -> Water -> Light -> Temp -> Hum -> Location
+    PathMap result      = PathMap();
+    result.seed         = seed;
+    result.soil         = handle_map(Soil, result.seed);
+    result.fertilizer   = handle_map(Fertilizer, result.soil);
+    result.water        = handle_map(Water, result.fertilizer);
+    result.light        = handle_map(Light, result.water);
+    result.temperature  = handle_map(Temperature, result.light);
+    result.humidity     = handle_map(Humidity, result.temperature);
+    result.location     = handle_map(Location, result.humidity);
+
+
+    return result;
 }
 
 void line_parser(std::string line, int line_num)
@@ -207,15 +245,6 @@ void read_file(std::string filename, void (*parser)(std::string line, int line_n
 
 void build_cache()
 {
-    //Seeds = std::vector<uint32_t>(MAP_PREALLOCATE);
-    //Soil = std::vector<RangeMap>(MAP_PREALLOCATE);
-    //Fertilizer = std::vector<RangeMap>(MAP_PREALLOCATE);
-    //Water = std::vector<RangeMap>(MAP_PREALLOCATE);
-    //Light = std::vector<RangeMap>(MAP_PREALLOCATE);
-    //Temperature = std::vector<RangeMap>(MAP_PREALLOCATE);
-    //Humidity = std::vector<RangeMap>(MAP_PREALLOCATE);
-    //Location = std::vector<RangeMap>(MAP_PREALLOCATE);
-
     std::string filepath = "../../../_puzzle_input/day";
     filepath += DAY;
     filepath += "/";
@@ -243,8 +272,8 @@ int main()
         
         std::vector<uint32_t> locations(Seeds.size());
         for (int i = 0; i < Seeds.size(); ++i) {
-            auto location = handle_find_seed_location(Seeds[i]);
-            locations[i] = location;
+            auto r = handle_find_seed_location(Seeds[i]);
+            locations[i] = r.location;
         }
         std::sort(locations.begin(), locations.end());
         
