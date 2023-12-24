@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <algorithm>
 #include <unordered_map>
 #include <ranges>
 #include <ExecutionTime.h>
@@ -14,7 +15,7 @@
 // Configuration 
 #define DAY "5"
 #define SLOGAN "If You Give A Seed A Fertilizer"
-#define USE_SAMPLE true
+#define USE_SAMPLE false
 
 // Conditional Configuration
 #if USE_SAMPLE
@@ -104,6 +105,10 @@ void handle_seeds(std::string line) {
     auto values = handle_collect_values(line);
     DEBUG_LOG(line);
     Seeds = values;
+}
+
+uint32_t handle_find_seed_location(uint32_t seed) {
+    return 5;
 }
 
 void line_parser(std::string line, int line_num)
@@ -228,12 +233,23 @@ int main()
 
     build_cache();
 
+    // fun note, the cache for the real input is only 64kb of memory :)
+
+    // fun note, dont forget that the in the RangeMap pairs, the FIRST is the DESTINATION, and the SECOND is the SOURCE
+
     // Part 1, 
     {
         score = 0;
         
+        std::vector<uint32_t> locations(Seeds.size());
+        for (int i = 0; i < Seeds.size(); ++i) {
+            auto location = handle_find_seed_location(Seeds[i]);
+            locations[i] = location;
+        }
+        std::sort(locations.begin(), locations.end());
+        
 
-        std::cout << "Part 1 Score: " << score << std::endl;
+        std::cout << "Part 1 Score: " << locations[0] << std::endl;
     }
 
     // Part 2
