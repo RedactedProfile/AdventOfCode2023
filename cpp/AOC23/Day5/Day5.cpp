@@ -39,6 +39,9 @@
 
 //////////////////////////////////////////////////////////////
 
+/// <summary>
+/// Storage container for unsigned value ranges
+/// </summary>
 class RangeMap {
 public:
     
@@ -56,7 +59,26 @@ public:
     }
 };
 
+/// <summary>
+/// Container for the discovered values when traversing the almanac
+/// </summary>
+struct PathMap
+{
+    uint32_t
+        seed,
+        soil,
+        fertilizer,
+        water,
+        light,
+        temperature,
+        humidity,
+        location;
+};
 
+
+/// <summary>
+/// The various available map types
+/// </summary>
 enum MapParseMode
 {
     NONE,
@@ -70,6 +92,12 @@ enum MapParseMode
     LOCATION
 };
 
+/// <summary>
+/// Global state for the active map parser 
+/// </summary>
+MapParseMode current_parse_mode = MapParseMode::NONE;
+
+
 std::vector<uint32_t> Seeds;
 std::vector<std::pair<RangeMap, RangeMap>> Soil;
 std::vector<std::pair<RangeMap, RangeMap>> Fertilizer;
@@ -79,13 +107,22 @@ std::vector<std::pair<RangeMap, RangeMap>> Temperature;
 std::vector<std::pair<RangeMap, RangeMap>> Humidity;
 std::vector<std::pair<RangeMap, RangeMap>> Location;
 
-MapParseMode current_parse_mode = MapParseMode::NONE;
 
+/// <summary>
+/// Given the provided RangeMap pair, provided value array is mapped accordingly
+/// </summary>
+/// <param name="map"></param>
+/// <param name="values"></param>
 void handle_feed_map(std::vector<std::pair<RangeMap, RangeMap>>& map, std::vector<uint32_t> values)
 {
     map.push_back({ {values[0], values[2]}, {values[1], values[2]} });
 }
 
+/// <summary>
+/// Converts a string of space deliminated number values into an array of uints
+/// </summary>
+/// <param name="line"></param>
+/// <returns></returns>
 std::vector<uint32_t> handle_collect_values(std::string line) {
     std::istringstream iss(line);
     std::vector<uint32_t> values;
@@ -99,7 +136,11 @@ std::vector<uint32_t> handle_collect_values(std::string line) {
     return values;
 }
 
-// The input ALWAYS starts with the seed line that awkwardly doesn't follow the same format as everything else by keeping the mode identifier in the same line as the values
+
+/// <summary>
+/// Special function, the "seeds" line requires stripping of the beginning before it can be converted
+/// </summary>
+/// <param name="line"></param>
 void handle_seeds(std::string line) {
     auto token = std::string("seeds: ");
     line = line.substr(token.size(), line.size() - token.size());
@@ -109,19 +150,13 @@ void handle_seeds(std::string line) {
     Seeds = values;
 }
 
-struct PathMap
-{
-    uint32_t 
-        seed, 
-        soil, 
-        fertilizer, 
-        water, 
-        light, 
-        temperature, 
-        humidity, 
-        location;
-};
 
+/// <summary>
+/// Attempts to find the provided value within the provided map's source range
+/// </summary>
+/// <param name="map"></param>
+/// <param name="value"></param>
+/// <returns>Destination value, uint</returns>
 uint32_t handle_map(std::vector<std::pair<RangeMap, RangeMap>>& map, uint32_t value) {
     uint32_t result = value; // default value that might be overridden
     for (int i = 0; i < map.size(); ++i) {
@@ -133,6 +168,11 @@ uint32_t handle_map(std::vector<std::pair<RangeMap, RangeMap>>& map, uint32_t va
     return result;
 }
 
+/// <summary>
+/// Takes a seed and a traverses the almanac map. 
+/// </summary>
+/// <param name="seed"></param>
+/// <returns>Hydrated PathMap with all discovered destination values</returns>
 PathMap handle_find_seed_location(uint32_t seed) {
     // we'll brute force this for now, maybe there's a better faster way using loops or something 
     
@@ -151,6 +191,12 @@ PathMap handle_find_seed_location(uint32_t seed) {
     return result;
 }
 
+
+/// <summary>
+/// Handles parsing of each individual line of the puzzle input
+/// </summary>
+/// <param name="line"></param>
+/// <param name="line_num"></param>
 void line_parser(std::string line, int line_num)
 {
     DEBUG_LOG(line);
