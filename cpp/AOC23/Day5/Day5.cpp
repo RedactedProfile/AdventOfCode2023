@@ -15,7 +15,9 @@
 // Configuration 
 #define DAY "5"
 #define SLOGAN "If You Give A Seed A Fertilizer"
-#define USE_SAMPLE false
+#define USE_SAMPLE true
+#define DO_PART_1 false 
+#define DO_PART_2 true
 
 // Conditional Configuration
 #if USE_SAMPLE
@@ -266,8 +268,11 @@ int main()
 
     // fun note, dont forget that the in the RangeMap pairs, the FIRST is the DESTINATION, and the SECOND is the SOURCE
 
+#if DO_PART_1
     // Part 1, 
     {
+        // We just need to loop through the seeds, find the location number of each seed, and report the lowest location number
+
         score = 0;
         
         std::vector<uint32_t> locations(Seeds.size());
@@ -276,15 +281,40 @@ int main()
             locations[i] = r.location;
         }
         std::sort(locations.begin(), locations.end());
+
+        score = locations[0];
         
 
-        std::cout << "Part 1 Score: " << locations[0] << std::endl;
+        std::cout << "Part 1 Score: " << score << std::endl;
     }
+#endif // DO_PART_1
 
+#if DO_PART_2
     // Part 2
     {
+        // This is the exact same puzzle, except that the seeds are actually in integer pairs denoting a range. 
+        // That's a lot of traversal for every seed (could be millions) 
+        // attempt 1: brute force it, just loop through the range of each pair and collect locations
+
         score = 0;
+
+        // attempt 1
+        uint32_t lowest_location = UINTMAX_MAX;
+        int iters = 0;
+        for (int i = 0; i < Seeds.size(); i += 2) { // first collect all the pairs
+            for (uint32_t s = Seeds[i]; s < Seeds[i] + Seeds[i + 1]; ++s) {
+                auto r = handle_find_seed_location(s);
+                if (r.location < lowest_location) {
+                    lowest_location = r.location;
+                }
+                iters++;
+            }
+        }
+
+        score = lowest_location;
+
 
         std::cout << "Part 2 Score: " << score << std::endl;
     }
+#endif
 }
