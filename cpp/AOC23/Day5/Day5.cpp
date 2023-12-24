@@ -15,8 +15,8 @@
 // Configuration 
 #define DAY "5"
 #define SLOGAN "If You Give A Seed A Fertilizer"
-#define USE_SAMPLE true
-#define DO_PART_1 false 
+#define USE_SAMPLE false
+#define DO_PART_1 true 
 #define DO_PART_2 true
 
 // Conditional Configuration
@@ -314,7 +314,7 @@ int main()
         score = lowest_location;
 
 
-        std::cout << "Part 2 Score: " << score << std::endl;
+        std::cout << "Part 2 Score after considering " << iters << " seeds: " << score << std::endl;
     }
 #endif
 }
