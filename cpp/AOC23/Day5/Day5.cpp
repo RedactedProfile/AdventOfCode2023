@@ -15,7 +15,7 @@
 // Configuration 
 #define DAY "5"
 #define SLOGAN "If You Give A Seed A Fertilizer"
-#define USE_SAMPLE true
+#define USE_SAMPLE false
 
 // Conditional Configuration
 #if USE_SAMPLE
