@@ -15,9 +15,9 @@
 // Configuration 
 #define DAY "5"
 #define SLOGAN "If You Give A Seed A Fertilizer"
-#define USE_SAMPLE false
+#define USE_SAMPLE true
 #define DO_PART_1 true 
-#define DO_PART_2 true
+#define DO_PART_2 false
 
 // Conditional Configuration
 #if USE_SAMPLE
@@ -320,11 +320,24 @@ int main()
         // We just need to loop through the seeds, find the location number of each seed, and report the lowest location number
 
         score = 0;
+
+        
         
         std::vector<uint32_t> locations(Seeds.size());
         for (int i = 0; i < Seeds.size(); ++i) {
             auto r = handle_find_seed_location(Seeds[i]);
             locations[i] = r.location;
+
+            DEBUG_LOG("--------------");
+            DEBUG_LOG(" seed: " << r.seed);
+            DEBUG_LOG(" soil: " << r.soil);
+            DEBUG_LOG(" fert: " << r.fertilizer);
+            DEBUG_LOG("water: " << r.water);
+            DEBUG_LOG("light: " << r.light);
+            DEBUG_LOG(" temp: " << r.temperature);
+            DEBUG_LOG("humid: " << r.humidity);
+            DEBUG_LOG("  loc: " << r.location);
+
         }
         std::sort(locations.begin(), locations.end());
 
