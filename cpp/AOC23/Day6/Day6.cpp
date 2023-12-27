@@ -10,14 +10,17 @@
 #include <unordered_map>
 #include <ranges>
 #include <ExecutionTime.h>
+#include <StringTools.hpp>
 
 
 // Configuration 
 #define DAY "6"
 #define SLOGAN "Wait For It"
-#define USE_SAMPLE true
+#define USE_SAMPLE false
 #define DO_PART_1 true 
 #define DO_PART_2 false
+
+#define TOKEN_JUMP 11
 
 // Conditional Configuration
 #if USE_SAMPLE
@@ -38,7 +41,31 @@
 
 
 ////////////// Structs and Classes //////////////
+struct Race
+{
+    int time, distance;
 
+    int simulate_winners() {
+        DEBUG_LOG("--------------------------");
+        DEBUG_LOG("     Total Time: " << time << "ms");
+        DEBUG_LOG("Record Distance: " << distance << "mm");
+        int winners = 0;
+        for (int held = 1; held < time; ++held) {
+            int simulated_distance = 0;
+
+            int speed = held; // our speed is 1mm per ms for each ms the button is held
+            simulated_distance = speed * (time - held);
+
+            DEBUG_LOG("-- " << held << "ms held = " << simulated_distance << "mm traveled");
+
+            if (simulated_distance > distance) winners++;
+        }
+
+        return winners;
+    }
+};
+
+std::vector<Race> races;
 
 ////////////// Parsing Functions ////////////////
 
@@ -51,6 +78,20 @@ void line_parser(std::string line, int line_num)
 {
     DEBUG_LOG(line);
 
+    int cursor = 0;
+    char mode = line.at(0);
+    auto values = str_split_to_int(str_normalize_whitespace(str_trim(line.substr(TOKEN_JUMP, line.size() - TOKEN_JUMP))), ' ');
+    for (int val : values) {
+        if (mode == 'T') {
+            races.push_back({ val, 0 });
+        }
+        else if (mode == 'D') {
+            races[cursor].distance = val;
+        }
+        cursor++;
+    }
+
+    
 }
 
 void read_file(std::string filename, void (*parser)(std::string line, int line_num))
@@ -92,16 +133,16 @@ int main()
 
     build_cache();
 
-    // fun note, the cache for the real input is only 64kb of memory :)
-
-    // fun note, dont forget that the in the RangeMap pairs, the FIRST is the DESTINATION, and the SECOND is the SOURCE
-
 #if DO_PART_1
     // Part 1, 
     {
-        // We just need to loop through the seeds, find the location number of each seed, and report the lowest location number
+        // for part 1 we simply find how many winning moves there are and multiply them all together
+        score = 1;
 
-        score = 0;
+        for (auto race : races)
+        {
+            score *= race.simulate_winners();
+        }
 
         std::cout << "Part 1 Score: " << score << std::endl;
     }
