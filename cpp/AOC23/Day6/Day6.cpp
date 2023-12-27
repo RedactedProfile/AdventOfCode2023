@@ -18,7 +18,7 @@
 #define SLOGAN "Wait For It"
 #define USE_SAMPLE false
 #define DO_PART_1 true 
-#define DO_PART_2 false
+#define DO_PART_2 true
 
 #define TOKEN_JUMP 11
 
@@ -43,17 +43,17 @@
 ////////////// Structs and Classes //////////////
 struct Race
 {
-    int time, distance;
+    uint64_t time, distance;
 
     int simulate_winners() {
         DEBUG_LOG("--------------------------");
         DEBUG_LOG("     Total Time: " << time << "ms");
         DEBUG_LOG("Record Distance: " << distance << "mm");
         int winners = 0;
-        for (int held = 1; held < time; ++held) {
-            int simulated_distance = 0;
+        for (uint64_t held = 1; held < time; ++held) {
+            uint64_t simulated_distance = 0;
 
-            int speed = held; // our speed is 1mm per ms for each ms the button is held
+            uint64_t speed = held; // our speed is 1mm per ms for each ms the button is held
             simulated_distance = speed * (time - held);
 
             DEBUG_LOG("-- " << held << "ms held = " << simulated_distance << "mm traveled");
@@ -80,8 +80,8 @@ void line_parser(std::string line, int line_num)
 
     int cursor = 0;
     char mode = line.at(0);
-    auto values = str_split_to_int(str_normalize_whitespace(str_trim(line.substr(TOKEN_JUMP, line.size() - TOKEN_JUMP))), ' ');
-    for (int val : values) {
+    auto values = str_split_to_uint(str_normalize_whitespace(str_trim(line.substr(TOKEN_JUMP, line.size() - TOKEN_JUMP))), ' ');
+    for (auto val : values) {
         if (mode == 'T') {
             races.push_back({ val, 0 });
         }
@@ -151,9 +151,22 @@ int main()
 #if DO_PART_2
     // Part 2
     {
+        // for part 2 we combine the number values of all races into one and simulate the one race value
         score = 0;
 
-        std::cout << "Part 2 Score after considering " << iters << " seeds: " << score << std::endl;
+        std::string _time = "";
+        std::string _dist = "";
+        for (auto race : races)
+        {
+            _time += std::to_string(race.time);
+            _dist += std::to_string(race.distance);
+        }
+
+        Race bigrace = { std::stoull(_time), std::stoull(_dist)};
+
+        score = bigrace.simulate_winners();
+
+        std::cout << "Part 2 Score: " << score << std::endl;
     }
 #endif
 }
