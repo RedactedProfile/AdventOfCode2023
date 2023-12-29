@@ -19,7 +19,7 @@ using namespace DirectX;
 // Configuration 
 #define DAY "10"
 #define SLOGAN "Pipe Maze"
-#define USE_SAMPLE true
+#define USE_SAMPLE false
 #define DO_PART_1 true 
 #define DO_PART_2 false
 
@@ -217,10 +217,10 @@ bool checkCompatPos(std::pair<int, int> pos, DIRECTION dir)
         compat = { TYPE::STRAIGHT_VERT, TYPE::CORNER_BL, TYPE::CORNER_BR };
         break;
     case LEFT:
-        compat = { TYPE::STRAIGHT_HORZ, TYPE::CORNER_TR, TYPE::CORNER_BR };
+        compat = { TYPE::STRAIGHT_HORZ, TYPE::CORNER_TR, TYPE::CORNER_BL };
         break;
     case RIGHT:
-        compat = { TYPE::STRAIGHT_HORZ, TYPE::CORNER_TL, TYPE::CORNER_BL };
+        compat = { TYPE::STRAIGHT_HORZ, TYPE::CORNER_TL, TYPE::CORNER_BR };
         break;
     default:
         break;
