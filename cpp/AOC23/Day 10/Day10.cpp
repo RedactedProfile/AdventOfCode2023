@@ -64,15 +64,12 @@ enum TYPE : char
     GROUND = '.'
 };
 
-TYPE typeLookup(const char c) {
-    if (TYPE::STRAIGHT_VERT == c) return TYPE::STRAIGHT_VERT;
-    else if (TYPE::STRAIGHT_HORZ == c) return TYPE::STRAIGHT_HORZ;
-    else if (TYPE::CORNER_BL == c) return TYPE::CORNER_BL;
-    else if (TYPE::CORNER_BR == c) return TYPE::CORNER_BR;
-    else if (TYPE::CORNER_TR == c) return TYPE::CORNER_TR;
-    else if (TYPE::CORNER_TL == c) return TYPE::CORNER_TL;
-    else return TYPE::GROUND;
-}
+enum DIRECTION {
+    ABOVE,
+    BELOW,
+    LEFT,
+    RIGHT
+};
 
 
 ////////////// Structs and Classes //////////////
@@ -95,10 +92,23 @@ std::map<std::pair<int, int>, Pipe*> map;
 Pipe* starter = nullptr;
 ////////////// Parsing Functions ////////////////
 
+TYPE typeLookup(const char c) {
+    if (TYPE::STRAIGHT_VERT == c) return TYPE::STRAIGHT_VERT;
+    else if (TYPE::STRAIGHT_HORZ == c) return TYPE::STRAIGHT_HORZ;
+    else if (TYPE::CORNER_BL == c) return TYPE::CORNER_BL;
+    else if (TYPE::CORNER_BR == c) return TYPE::CORNER_BR;
+    else if (TYPE::CORNER_TR == c) return TYPE::CORNER_TR;
+    else if (TYPE::CORNER_TL == c) return TYPE::CORNER_TL;
+    else return TYPE::GROUND;
+}
+
 void build_relationships() {
 
     for (auto pipe : map)
     {
+        if (pipe.second->id == 7576) {
+            DEBUG_LOG("asd");
+        }
         std::pair<int, int> poss_in, poss_out;
         std::vector<TYPE> compat_in, compat_out;
 
@@ -199,12 +209,7 @@ void build_relationships() {
     }
 }
 
-enum DIRECTION {
-    ABOVE,
-    BELOW,
-    LEFT,
-    RIGHT
-};
+
 bool checkCompatPos(std::pair<int, int> pos, DIRECTION dir)
 {
     std::vector<TYPE> compat;
@@ -247,12 +252,12 @@ void convert_starter() {
          compat_left  = map.find(left) != map.end() && checkCompatPos(left, DIRECTION::LEFT),
          compat_right = map.find(right) != map.end() && checkCompatPos(right, DIRECTION::RIGHT);
 
-    if      (compat_up && compat_down)    starter->type = TYPE::STRAIGHT_VERT;
-    else if (compat_left && compat_right) starter->type = TYPE::STRAIGHT_HORZ;
-    else if (compat_up && compat_right)   starter->type = TYPE::CORNER_BL;
-    else if (compat_up && compat_left)    starter->type = TYPE::CORNER_BR;
-    else if (compat_left && compat_down)  starter->type = TYPE::CORNER_TR;
-    else if (compat_down && compat_right) starter->type = TYPE::CORNER_TL;
+    if      (compat_up && compat_down)    { starter->type = TYPE::STRAIGHT_VERT; }
+    else if (compat_left && compat_right) { starter->type = TYPE::STRAIGHT_HORZ; }
+    else if (compat_up && compat_right)   { starter->type = TYPE::CORNER_BL; }
+    else if (compat_up && compat_left)    { starter->type = TYPE::CORNER_BR; }
+    else if (compat_left && compat_down)  { starter->type = TYPE::CORNER_TR; }
+    else if (compat_down && compat_right) { starter->type = TYPE::CORNER_TL; }
 }
 
 /// <summary>
@@ -277,6 +282,7 @@ void line_parser(std::string line, int line_num)
 
         if (line[i] == 'S') {
             starter = pipe;
+            map[pipe->point0] = pipe;
         }
     }
 }
@@ -308,8 +314,9 @@ void build_cache()
     filepath += "/";
     filepath += FILENAME;
     read_file(filepath, line_parser);
-    build_relationships();
     convert_starter();
+    build_relationships();
+    
 }
 
 int main()
@@ -321,6 +328,34 @@ int main()
     std::cout << "========================================" << std::endl;
 
     build_cache();
+
+    std::cout << "Starter Position Type: ";
+    switch (starter->type)
+    {
+    case STRAIGHT_VERT:
+        std::cout << "vertical pipe <║> ";
+        break;
+    case STRAIGHT_HORZ:
+        std::cout << "horizontal pipe <=> ";
+        break;
+    case CORNER_BL:
+        std::cout << "bottom left <╚> ";
+        break;
+    case CORNER_BR:
+        std::cout << "bottom right <╝> ";
+        break;
+    case CORNER_TR:
+        std::cout << "top right <╗> ";
+        break;
+    case CORNER_TL:
+        std::cout << "top left <╔> ";
+        break;
+    case GROUND:
+    default:
+        std::cout << "not found";
+        break;
+    }
+    std::cout << std::endl;
 
 #if DO_PART_1
     // Part 1, 
