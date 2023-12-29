@@ -14,16 +14,16 @@
 
 
 // Configuration 
-#define DAY "7"
-#define SLOGAN "Camel Cards"
-#define USE_SAMPLE false
+#define DAY "10"
+#define SLOGAN "Pipe Maze"
+#define USE_SAMPLE true
 #define DO_PART_1 true 
 #define DO_PART_2 false
 
 
 // Conditional Configuration
 #if USE_SAMPLE
-#define FILENAME "input_sample.txt"
+#define FILENAME "input_sample_simple.txt"
 #else 
 #define FILENAME "input.txt"
 #endif
@@ -42,60 +42,7 @@
 ////////////// Structs and Classes //////////////
 
 
-enum HAND_TYPE {
-    FIVE,
-    FOUR,
-    FULL,
-    THREE,
-    TWO,
-    ONE,
-    HIGH,
-    NONE
-};
-struct Hand
-{   
-    std::string cards;
-    int bid;
 
-    HAND_TYPE result = HAND_TYPE::NONE;
-
-    void eval_hand() {
-        // update result with the type of hand this is
-        std::unordered_map<char, int> collection;
-        for (auto card : cards) {
-            if (!collection.contains(card)) collection[card] = 1;
-            else collection[card]++;
-        }
-
-        if (collection.size() == 1) {
-            result = HAND_TYPE::FIVE;
-        }
-        else if (collection.size() == 5) {
-            result = HAND_TYPE::HIGH;
-        }
-        else if (collection.size() == 2) {
-            result = HAND_TYPE::FULL;
-        }
-        else if (collection.size() == 3) {
-            // two pair or three of a kind?
-            for (const auto& pair : collection) {
-                if (pair.second == 3) {
-                    result = HAND_TYPE::THREE;
-                    break;
-                }
-            }
-            if (result == HAND_TYPE::NONE) {
-                result = HAND_TYPE::TWO;
-            }
-        }
-        else if (collection.size() == 4) {
-            result = HAND_TYPE::ONE;
-        }
-    }
-};
-
-
-std::vector<Hand> hands;
 ////////////// Parsing Functions ////////////////
 
 /// <summary>
@@ -107,11 +54,7 @@ void line_parser(std::string line, int line_num)
 {
     DEBUG_LOG(line);
 
-    auto parts = str_split(str_normalize_whitespace(str_trim(line)), ' ');
-    Hand hand = { parts[0], std::stoi(parts[1]) };
-    hand.eval_hand();
-
-    hands.push_back(hand);
+  
 }
 
 void read_file(std::string filename, void (*parser)(std::string line, int line_num))
